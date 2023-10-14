@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  frontend:
+    container_name: nftmarketplace_frontend
+    build:
+      context: ./
+    ports:
+      - 3005:3000
+    volumes:
+      - nftmarketplace_frontend_node_modules:/frontend/node_modules
+    restart: always
+
+volumes:
+  nftmarketplace_frontend_node_modules:
