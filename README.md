@@ -1,25 +1,26 @@
-# NFT Marketplace
+# NFT Marketplace: https://nft-market.giovaborgogno.com
 
-<p>Hey guys, Khanisic/Abdul Moid Khan here 👋.</p>
-<br/>
 <p>Welcome to the NFT Marketplace where you can upload your images and watch them turn into NFTs. Here, you can trade your NFTs with other creators.</p>
-<br/>
-<p>I have used <i>Next.js - A fullstack react framework,</i> to build the project deployed it on vercel. For the smart contract deployment, I've used hardhat and used ETH to power the smart contract!</p>
+<p>We have used <i>Next.js - A fullstack react framework,</i> to build the project deployed it on our own VPS. For the smart contract deployment, We've used hardhat and used ETH to power the smart contract!</p>
 
-### Steps to install:
+## Steps to install locally:
 
-1.Run the npm install command.
+### 1. Environment. 
+
+Create a .env file using .env.example.
+
+You need to get: 
+
+a NFT Storage Token in: https://nft.storage/docs/#get-an-api-token
+
+a Infura Public Key in: https://docs.infura.io/getting-started#2-create-an-api-key
+
+### 2. Run.
+
+Run the docker compose.
 
 ```shell
-npm install
+docker-compose up
 ```
-
-2.After the dependencies have been installed, run the build command.
-
-```shell
-npm run dev
-```
-
-<p>Further explanation can be found here on my Medium blog - <a link="https://betterprogramming.pub/creating-an-nft-marketplace-solidity-2323abca6346">Creating an NFT Marketplace with solidity</a> </p>
 
 <p>Thank You ❤️</p>
