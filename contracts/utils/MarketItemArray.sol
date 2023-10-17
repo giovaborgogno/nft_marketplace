@@ -6,6 +6,13 @@ import "../structures/MarketItem.sol";
 library MarketItemArray {
     error ItemNotFound(uint256 tokenId);
 
+    /**
+     * @dev Find an item in the array by its index.
+     *
+     * @param arr The array of MarketItem.
+     * @param index The index of the item to find.
+     * @return The found MarketItem structure.
+     */
     function find(
         MarketItem[] storage arr,
         uint index
@@ -14,6 +21,13 @@ library MarketItemArray {
         return arr[index];
     }
 
+    /**
+     * @dev Find an item in the array by its tokenId.
+     *
+     * @param arr The array of MarketItem.
+     * @param tokenId The tokenId of the item to find.
+     * @return The found MarketItem structure.
+     */
     function findByTokenId(
         MarketItem[] storage arr,
         uint256 tokenId
@@ -22,6 +36,12 @@ library MarketItemArray {
         return arr[index];
     }
 
+    /**
+     * @dev Remove an item from the array by its index.
+     *
+     * @param arr The array of MarketItem.
+     * @param index The index of the item to remove.
+     */
     function remove(MarketItem[] storage arr, uint index) internal {
         // Move the last element into the place to delete
         require(arr.length > 0, "Can't remove from empty array");
@@ -30,6 +50,12 @@ library MarketItemArray {
         arr.pop();
     }
 
+    /**
+     * @dev Remove an item from the array by its tokenId.
+     *
+     * @param arr The array of MarketItem.
+     * @param tokenId The tokenId of the item to remove.
+     */
     function removeByTokenId(
         MarketItem[] storage arr,
         uint256 tokenId
@@ -38,6 +64,13 @@ library MarketItemArray {
         remove(arr, index);
     }
 
+    /**
+     * @dev Find the index of an item in the array by its tokenId.
+     *
+     * @param arr The array of MarketItem.
+     * @param tokenId The tokenId of the item to find.
+     * @return The index of the found item.
+     */
     function findIndexByTokenId(
         MarketItem[] storage arr,
         uint256 tokenId
