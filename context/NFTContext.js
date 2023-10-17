@@ -279,6 +279,17 @@ export const NFTProvider = ({ children }) => {
       const transaction = await contract.createMarketSale(nft.tokenId);
 
       await transaction.wait();
+      await ethereum.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC721',
+          options: {
+            address: process.env.NEXT_PUBLIC_MARKET_ADDRESS,
+            tokenId: nft.tokenId 
+          },
+        },
+      });
+
     } catch (error) {
       router.push('/')
       toast.error('An error has occurred buying NFTs')
@@ -297,6 +308,18 @@ export const NFTProvider = ({ children }) => {
       const contract = fetchUSDCFaucetContract(signer)
       const transaction = await contract.claimTokens()
       await transaction.wait()
+      await window.ethereum.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address: process.env.NEXT_PUBLIC_USDC_ADDRESS, // The address of the token.
+            symbol: 'SepoliaUSDC', // A ticker symbol or shorthand, up to 5 characters.
+            decimals: 6, // The number of decimals in the token.
+            image: "https://ipfs.io/ipfs/bafybeibxxoboebmzbpqj5ooqfadl5uecjyth4i5wozcul5kkq7yernxyn4/Allianz Logo.jpeg", // A string URL of the token logo.
+          },
+        },
+      });
 
       toast.success('We send USDC to your wallet')
     } catch (error) {

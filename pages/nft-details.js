@@ -94,7 +94,7 @@ const NFTDetails = () => {
         </div>
 
         <div className="mt-10">
-          <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-2xl minlg:text-2xl">Creator</p>
+          <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-2xl minlg:text-2xl">Owner</p>
           <div className="flex flex-row items-center mt-3">
             <div className="relative w-12 h-12 minlg:w-20 minlg:h-20 mr-2">
               <Image src={images.creator1} objectFit="cover" className="rounded-full" />
@@ -109,7 +109,13 @@ const NFTDetails = () => {
           </div>
           <div className="mt-3">
             <p className="font-poppins dark:text-white text-nft-black-1 font-normal text-base">
-              {nft.description}
+              Description: {nft.description}
+            </p>
+            <p className="font-poppins dark:text-white text-nft-black-1 font-normal text-base">
+              Token Id: {nft.tokenId}
+            </p>
+            <p className="font-poppins dark:text-white text-nft-black-1 font-normal text-base">
+              Contract Address: {process.env.NEXT_PUBLIC_MARKET_ADDRESS}
             </p>
           </div>
         </div>
