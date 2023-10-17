@@ -4,9 +4,10 @@ import axios from 'axios';
 
 import { NFTContext } from '../context/NFTContext';
 import { Button, Input, Loader } from '../components';
+import toast from 'react-hot-toast';
 
 const ResellNFT = () => {
-  const { listItem, isLoadingNFT, checkIfWalletIsConnect } = useContext(NFTContext);
+  const { listItem, isLoadingNFT, checkIfWalletIsConnect, connectWallet, currentAccount } = useContext(NFTContext);
   const [price, setPrice] = useState('');
   const [image, setImage] = useState('');
   const router = useRouter();
@@ -21,6 +22,14 @@ const ResellNFT = () => {
     setImage(data.image);
     setIsLoading(false);
   };
+
+  useEffect(()=>{
+    if (currentAccount == ''){
+      router.push('/')
+      toast.error('Connect your metamask!')
+      connectWallet() 
+    }
+  },[])
 
   useEffect(()=>{
     checkIfWalletIsConnect()

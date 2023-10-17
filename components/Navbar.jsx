@@ -130,12 +130,12 @@ const Navbar = () => {
   const [active, setActive] = useState('Explore NFTs');
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-  const { balanceOfUSDC, getBalanceOfUSDC, claimUSDCTokens } = useContext(NFTContext);
+  const { balanceOfUSDC, getBalanceOfUSDC, claimUSDCTokens, currentAccount } = useContext(NFTContext);
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    getBalanceOfUSDC()
-  }, [balanceOfUSDC]);
+    if (currentAccount != '') getBalanceOfUSDC()
+  }, [balanceOfUSDC, currentAccount]);
 
   useEffect(() => {
     setTheme('dark');

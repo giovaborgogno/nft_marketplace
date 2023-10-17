@@ -44,7 +44,7 @@ const PaymentBodyCmp = ({ nft, nftCurrency }) => (
 );
 
 const NFTDetails = () => {
-  const { nftCurrency, currentAccount, buyNFT, checkIfWalletIsConnect, unListItem } = useContext(NFTContext);
+  const { nftCurrency, currentAccount, buyNFT, checkIfWalletIsConnect, unListItem, connectWallet } = useContext(NFTContext);
   const [nft, setNft] = useState({ image: '', itemId: '', name: '', owner: '', price: '', onSale: '' });
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingPayment, setIsLoadingPayment] = useState(false);
@@ -114,7 +114,14 @@ const NFTDetails = () => {
           </div>
         </div>
         <div className="flex flex-row sm:flex-col mt-10">
-          {currentAccount === nft.owner.toLowerCase()
+          {currentAccount == '' ? 
+          <Button
+          btnName="Connect your wallet"
+          btnType="primary"
+          classStyles="mr-5 sm:mr-0 sm:mb-5 rounded-xl"
+          handleClick={connectWallet}
+        />
+          : currentAccount === nft.owner.toLowerCase()
               ? nft.onSale == 'true' ?
               ( 
                 <div className='flex flex-col gap-2'><p>On Sale for ${nft.price} ${nftCurrency}</p>

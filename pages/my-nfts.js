@@ -4,6 +4,8 @@ import { NFTContext } from '../context/NFTContext';
 import { Loader, NFTCard, Banner, SearchBar } from '../components';
 import creator1 from '../assets/creator1.png';
 import { shortenAddress } from '../utils/shortenAddress';
+import { useRouter } from 'next/router';
+import toast from 'react-hot-toast';
 
 const images = {
   creator1
@@ -13,8 +15,18 @@ const MyNFTs = () => {
   const [nfts, setNfts] = useState([]);
   const [nftsCopy, setNftsCopy] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { fetchMyNFTsOrListedNFTs, currentAccount } = useContext(NFTContext);
+  const { fetchMyNFTsOrListedNFTs, currentAccount, connectWallet } = useContext(NFTContext);
   const [activeSelect, setActiveSelect] = useState('Recently added');
+
+  const router = useRouter()
+
+  useEffect(()=>{
+    if (currentAccount == ''){
+      router.push('/')
+      toast.error('Connect your metamask!')
+      connectWallet() 
+    }
+  },[])
 
   useEffect(() => {
     fetchMyNFTsOrListedNFTs('')

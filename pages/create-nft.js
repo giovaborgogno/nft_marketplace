@@ -8,6 +8,7 @@ import { Button, Input, Loader } from '../components';
 import upload from '../assets/upload.png';
 import loader from '../assets/loader.gif';
 import { NFTContext } from '../context/NFTContext';
+import toast from 'react-hot-toast';
 
 const images = {
   upload, 
@@ -24,8 +25,16 @@ const CreateNFT = () => {
     name: '',
     description: '',
   });
-  const { uploadToIPFS, createNFT, checkIfWalletIsConnect } = useContext(NFTContext);
+  const { uploadToIPFS, createNFT, checkIfWalletIsConnect, connectWallet, currentAccount } = useContext(NFTContext);
   const router = useRouter();
+
+  useEffect(()=>{
+    if (currentAccount == ''){
+      router.push('/')
+      toast.error('Connect your metamask!')
+      connectWallet() 
+    }
+  },[])
   const onDrop = useCallback(async (acceptedFile) => {
     setLoadingFile(true);
     const url = await uploadToIPFS(acceptedFile[0]);
