@@ -92,19 +92,20 @@ export const NFTProvider = ({ children }) => {
          })
 
         setCurrentAccount(accounts[0]);
-        return true
       } else {
         const path = router.pathname
         if (path == '/' || path == '/nft-details') return false;
         router.push('/')
         toast.error('Connect your metamask!')
         console.log('No accounts found');
+        return false
       }
-      return false
+      return true
     } catch (error) {
       toast.error(error.message)
       // toast.error('You need to connect your Metamask')
       router.push('/');
+      return false;
     }
 
   };
