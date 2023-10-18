@@ -125,9 +125,9 @@ const Home = () => {
           childStyles="md:text-4xl sm:text-2xl xs:text-xl text-left"
           parentStyle="justify-start mb-7 h-72 sm:h-60 p-12 xs:p-4 xs:h-44 rounded-3xl"
           />
-          {currentAccount != '' && <p className='font-popppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold ml-4 xs:ml-0 mb-6'>Your Balance: {balanceOfUSDC} USDC</p>}
+          {currentAccount != '' && <p className='font-popppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold sm:ml-0 ml-4 xs:ml-0 mb-6'>Your Balance: {balanceOfUSDC} USDC</p>}
         <div>
-          <h1 className="font-popppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold ml-4 xs:ml-0">Best Creators</h1>
+          <h1 className="font-popppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold sm:ml-0 ml-4 xs:ml-0">Best Creators</h1>
           <div className="relative flex-1 max-w-full flex mt-3" ref={parentRef}>
             <div className="flex flex-row w-max overflow-x-scroll no-scrollbar select-none" ref={scrollRef}>
               {/* {[6, 7, 8, 9, 10].map((i) => (
@@ -167,7 +167,7 @@ const Home = () => {
           </div>
         </div>
         <div className="mt-10">
-          <div className="flexBetween mx-4 xs:mx-0 minlg:mx-8 sm:flex-col sm:items-start">
+          <div className="flexBetween mx-4 xs:mx-0 sm:ml-0 minlg:mx-8 sm:flex-col sm:items-start">
             <div className='flex-1 minlg:text-4xl sm:mb-4'>
               <h1 className="flex-1 before:font-popppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold ">Hot Bidz </h1>
               <p className='text-sm'>USDC Balance: {balanceOfUSDC}</p>
