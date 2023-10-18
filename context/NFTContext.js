@@ -64,7 +64,11 @@ export const NFTProvider = ({ children }) => {
 
   const checkIfWalletIsConnect = async () => {
     try {
-      if (!window.ethereum) return toast.error('Please install Metamask');
+      if (!window.ethereum) {
+        router.push('/');
+        toast.error('Please install Metamask');
+        return false;
+      }
 
       const accounts = await window.ethereum.request({
         method: 'eth_accounts',
