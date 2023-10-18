@@ -65,6 +65,8 @@ export const NFTProvider = ({ children }) => {
   const checkIfWalletIsConnect = async () => {
     try {
       if (!window.ethereum) {
+        const path = router.pathname
+        if (path == '/' || path == '/nft-details') return false;
         router.push('/');
         toast.error('Please install Metamask');
         return false;
