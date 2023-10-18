@@ -7,7 +7,7 @@ import { Button, Input, Loader } from '../components';
 import toast from 'react-hot-toast';
 
 const ResellNFT = () => {
-  const { listItem, isLoadingNFT, checkIfWalletIsConnect, connectWallet, currentAccount } = useContext(NFTContext);
+  const { listItem, isLoadingNFT, checkIfWalletIsConnect } = useContext(NFTContext);
   const [price, setPrice] = useState('');
   const [image, setImage] = useState('');
   const router = useRouter();
@@ -23,13 +23,6 @@ const ResellNFT = () => {
     setIsLoading(false);
   };
 
-  useEffect(()=>{
-    if (currentAccount == ''){
-      router.push('/')
-      toast.error('Connect your metamask!')
-      connectWallet() 
-    }
-  },[])
 
   useEffect(()=>{
     checkIfWalletIsConnect()

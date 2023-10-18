@@ -36,7 +36,7 @@ export const NFTProvider = ({ children }) => {
 
   const connectWallet = async () => {
     try {
-      if (!window.ethereum) return alert('Please install MetaMask.');
+      if (!window.ethereum) return toast.error('Please install Metamask');
 
       const accounts = await window.ethereum.request({
         method: 'eth_requestAccounts',
@@ -52,7 +52,8 @@ export const NFTProvider = ({ children }) => {
       }
 
       setCurrentAccount(accounts[0]);
-      window.location.reload();
+      // window.location.reload();
+      router.reload()
     } catch (error) {
       toast.error(error.message)
       // toast.error('You need to connect your Metamask')
@@ -85,9 +86,15 @@ export const NFTProvider = ({ children }) => {
          })
 
         setCurrentAccount(accounts[0]);
+        return true
       } else {
+        const path = router.pathname
+        if (path == '/' || path == '/nft-details') return false;
+        router.push('/')
+        toast.error('Connect your metamask!')
         console.log('No accounts found');
       }
+      return false
     } catch (error) {
       toast.error(error.message)
       // toast.error('You need to connect your Metamask')
@@ -289,7 +296,7 @@ export const NFTProvider = ({ children }) => {
           },
         },
       });
-
+      getBalanceOfUSDC()
     } catch (error) {
       router.push('/')
       toast.error('An error has occurred buying NFTs')
@@ -308,6 +315,8 @@ export const NFTProvider = ({ children }) => {
       const contract = fetchUSDCFaucetContract(signer)
       const transaction = await contract.claimTokens()
       await transaction.wait()
+      toast.success('We send USDC to your wallet')
+      getBalanceOfUSDC()
       await window.ethereum.request({
         method: 'wallet_watchAsset',
         params: {
@@ -321,7 +330,6 @@ export const NFTProvider = ({ children }) => {
         },
       });
 
-      toast.success('We send USDC to your wallet')
     } catch (error) {
       toast.error('You can claim tokens once a day')
     }

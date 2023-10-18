@@ -28,13 +28,6 @@ const CreateNFT = () => {
   const { uploadToIPFS, createNFT, checkIfWalletIsConnect, connectWallet, currentAccount } = useContext(NFTContext);
   const router = useRouter();
 
-  useEffect(()=>{
-    if (currentAccount == ''){
-      router.push('/')
-      toast.error('Connect your metamask!')
-      connectWallet() 
-    }
-  },[])
   const onDrop = useCallback(async (acceptedFile) => {
     setLoadingFile(true);
     const url = await uploadToIPFS(acceptedFile[0]);
@@ -85,17 +78,17 @@ const CreateNFT = () => {
             Upload files
           </p>
           <div className="mt-4">
-            <div {...getRootProps()} className={fileStyle}>
+            <div {...getRootProps()} className={`${fileStyle} rounded-lg`}>
               <input {...getInputProps()} />
               <div className="flexCenter flex-col text-center">
                 <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-xl">
-                  JPG, GIF, SVG, WEBM Mx 100mb.
+                  JPG, GIF, SVG, WEBP Mx 100mb.
                 </p>
                 <div className="my-12 w-full flex justify-center">
                   <Image
-                    src={loadingFile ? images.loader : images.upload}
-                    width={100}
-                    height={100}
+                    src={fileUrl != '' ? fileUrl : loadingFile ? images.loader : images.upload}
+                    width={fileUrl != '' ? 400 : 100}
+                    height={fileUrl != '' ? 400 : 100}
                     objectFit="contain"
                     alt="File Upload"
                     className={theme === 'light' ? 'filter invert' : ''}
@@ -109,13 +102,13 @@ const CreateNFT = () => {
                 </p>
               </div>
             </div>
-            {fileUrl && (
+            {/* {fileUrl && (
               <aside>
                 <div>
                   <img src={fileUrl} alt="asset_file" />
                 </div>
               </aside>
-            )}
+            )} */}
           </div>
         </div>
         <Input

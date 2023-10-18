@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useContext } from 'react';
 import Image from 'next/dist/client/image';
 import { useTheme } from 'next-themes';
-import { Banner, CreatorCard, Loader, NFTCard, SearchBar } from '../components';
+import { Banner, Button, CreatorCard, Loader, NFTCard, SearchBar } from '../components';
 import left from '../assets/left.png';
 import right from '../assets/right.png';
 import creator1 from '../assets/creator1.png';
@@ -37,11 +37,12 @@ const Home = () => {
   const parentRef = useRef(null);
   const scrollRef = useRef(null);
   const [hideButtons, setHideButtons] = useState(false);
-  const { fetchNFTs, balanceOfUSDC } = useContext(NFTContext);
+  const { fetchNFTs, balanceOfUSDC, currentAccount } = useContext(NFTContext);
   const [nfts, setNfts] = useState([]);
   const [nftsCopy, setNftsCopy] = useState([]);
   const [activeSelect, setActiveSelect] = useState('Recently added');
   const [loading, setLoading] = useState(true)
+  const [max, setMax] = useState(10)
   const handleScroll = (direction) => {
     const { current } = scrollRef;
 
@@ -117,12 +118,14 @@ const Home = () => {
 
   return (
     <div className="flex justify-center sm:px-4 p-12">
+      
       <div className="w-full minmd:w-4/5">
         <Banner
           name={(<>Discover, collect, and sell <br /> extraordinary NFTs</>)}
           childStyles="md:text-4xl sm:text-2xl xs:text-xl text-left"
           parentStyle="justify-start mb-7 h-72 sm:h-60 p-12 xs:p-4 xs:h-44 rounded-3xl"
-        />
+          />
+          {currentAccount != '' && <p className='font-popppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold ml-4 xs:ml-0 mb-6'>Your Balance: {balanceOfUSDC} USDC</p>}
         <div>
           <h1 className="font-popppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold ml-4 xs:ml-0">Best Creators</h1>
           <div className="relative flex-1 max-w-full flex mt-3" ref={parentRef}>
@@ -173,11 +176,11 @@ const Home = () => {
               <SearchBar activeSelect={activeSelect} setActiveSelect={setActiveSelect} handleSearch={onHandleSearch} clearSearch={onClearSearch} />
             </div>
           </div>
-          <div className="mt-3 w-full flex flex-wrap justify-start md:justify-center">
+          <div className="mt-3 w-full flex sm:flex-col flex-wrap justify-start justify-center">
 
             {
               !loading ?
-                nfts.map((nft) => (
+                nfts.slice(0, max).map((nft) => (
                   <NFTCard
                     key={nft.tokenId}
                     nft={nft}
@@ -185,22 +188,24 @@ const Home = () => {
                 )) :
                 <Loader />
             }
-            {/* {
-                  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
-                    <NFTCard
-                      key={`nft-${i}`}
-                      nft={{
-                        i,
-                        name: `Nifty NFT ${i}`,
-                        price: (10 - i * 0.534).toFixed(2),
-                        
-                        owner: `0x${makeid(3)}...${makeid(4)}`,
-                        description: 'Cool NFT on Sale',
-                      }}
-                    />
-                  ))
-                } */}
+            
           </div>
+         {nfts.length > max ? <div className='text-center'>
+          <Button
+            btnName={'Show More'}
+            classStyles={'rounded-lg '}
+            handleClick={()=>setMax(max + 5)}
+            />
+            </div>
+            : !loading && max > 10 &&
+            <div className='text-center'>
+          <Button
+            btnName={'Show Less'}
+            classStyles={'rounded-lg '}
+            handleClick={()=>setMax(max - 5)}
+            />
+            </div>
+            }
         </div>
       </div>
     </div>
