@@ -88,7 +88,7 @@ const MyNFTs = () => {
         :
         nfts?.length ?
           <div className="sm:px-4 p-4 w-full minmd:w-4/5 flexCenter flex-col">
-            <div className="flex-1 w-full flex flex-row sm:flex-col px-4 xs:px-0 minlg:px-8">
+            <div className="flex-1 w-full flex flex-row sm:flex-col px-4 xs:px-0 sm:px-0 minlg:px-8">
               <SearchBar activeSelect={activeSelect} setActiveSelect={setActiveSelect} handleSearch={onHandleSearch} clearSearch={onClearSearch} />
             </div>
             <div className="mt-3 w-full flex sm:flex-col flex-wrap items-center justify-center">
