@@ -11,5 +11,13 @@ module.exports = {
       accounts: [SEPOLIA_PRIVATE_KEY]
     }
   },
-  solidity: '0.8.20',
+  solidity: {
+    version: "0.8.20",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200
+      }
+    }
+  },
 };

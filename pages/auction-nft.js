@@ -6,9 +6,10 @@ import { NFTContext } from '../context/NFTContext';
 import { Button, Input, Loader } from '../components';
 import toast from 'react-hot-toast';
 
-const ResellNFT = () => {
-  const { listItem, isLoadingNFT, checkIfWalletIsConnect } = useContext(NFTContext);
+const AuctionNFT = () => {
+  const { auctionItem, isLoadingNFT, checkIfWalletIsConnect } = useContext(NFTContext);
   const [price, setPrice] = useState('');
+  const [duration, setDuration] = useState(0);
   const [image, setImage] = useState('');
   const router = useRouter();
   const { id, tokenURI } = router.query;
@@ -32,9 +33,9 @@ const ResellNFT = () => {
     if (tokenURI) fetchNFT();
   }, [tokenURI]);
 
-  const resell = async () => {
+  const createAuction = async () => {
     setIsLoadingPayment(true);
-    await listItem(price, id);
+    await auctionItem(id, price, duration);
     router.push('/listed-nfts');
     setIsLoadingPayment(false);
   };
@@ -50,7 +51,7 @@ const ResellNFT = () => {
   return (
     <div className="flex justify-center sm:px-4 p-12">
       <div className="w-3/5 md:w-full">
-        <h1 className="font-poppins dark:text-white text-nft-black-1 font-semibold text-2xl">Sell NFT</h1>
+        <h1 className="font-poppins dark:text-white text-nft-black-1 font-semibold text-2xl">Auction NFT</h1>
 
         <Input
           inputType="number"
@@ -59,15 +60,21 @@ const ResellNFT = () => {
           handleClick={(e) => setPrice(e.target.value)}
           type='currency'
         />
+        <Input
+          inputType="number"
+          title="Duration"
+          placeholder="Duration Time"
+          handleClick={(e) => setDuration(e.target.value)}
+        />
 
         {image && <img className="rounded mt-4" width="350" src={image} />}
 
         <div className="mt-7 w-full flex justify-end">
           <Button
-            btnName="List NFT"
+            btnName="Create Auction"
             btnType="primary"
             classStyles="rounded-xl"
-            handleClick={resell}
+            handleClick={createAuction}
             isLoading={isLoadingPayment}
           />
         </div>
@@ -76,4 +83,4 @@ const ResellNFT = () => {
   );
 };
 
-export default ResellNFT;
+export default AuctionNFT;

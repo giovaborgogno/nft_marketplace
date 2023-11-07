@@ -2,7 +2,7 @@ import { useContext } from 'react';
 
 import { NFTContext } from '../context/NFTContext';
 
-const Input = ({ inputType, title, placeholder, handleClick }) => {
+const Input = ({ inputType, title, placeholder, handleClick, type }) => {
   const { nftCurrency } = useContext(NFTContext);
 
   return (
@@ -17,7 +17,9 @@ const Input = ({ inputType, title, placeholder, handleClick }) => {
             placeholder={placeholder}
             onChange={handleClick}
           />
-          <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-xl">{nftCurrency}</p>
+          <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-xl">
+            {type == 'currency' ? nftCurrency : 'Seconds'}
+            </p>
         </div>
       )
         : inputType === 'textarea' ? (

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Web3Modal from 'web3modal';
 import { ethers } from 'ethers';
 import axios from 'axios';
-import { MarketAddress, MarketAddressABI, USDCSepoliaAddress, USDCSepoliaABI, USDCFaucetABI, USDCFaucetAddress } from './constants';
+import { MarketAddress, MarketAddressABI, USDCSepoliaAddress, USDCSepoliaABI, USDCFaucetABI, USDCFaucetAddress, DECIMALS, STATUS_FOR_SALE, STATUS_AUCTION } from './constants';
 import { NFTStorage, Blob } from 'nft.storage'
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
@@ -163,7 +163,7 @@ export const NFTProvider = ({ children }) => {
       const provider = new ethers.providers.Web3Provider(connection);
       const signer = provider.getSigner();
 
-      const price = ethers.utils.parseUnits(formInputPrice, 6);
+      const price = ethers.utils.parseUnits(formInputPrice, DECIMALS);
       const contract = fetchContract(signer);
 
       const transaction = await contract.listItem(id, price);
@@ -171,6 +171,113 @@ export const NFTProvider = ({ children }) => {
 
     } catch (error) {
       toast.error('An error has occurred listing item')
+    }
+  };
+
+  const auctionItem = async (id, formInputPrice, durationInSeconds) => {
+    try {
+
+
+      const web3modal = new Web3Modal();
+      const connection = await web3modal.connect();
+      const provider = new ethers.providers.Web3Provider(connection);
+      const signer = provider.getSigner();
+
+      const price = ethers.utils.parseUnits(formInputPrice, DECIMALS);
+      const contract = fetchContract(signer);
+
+      const transaction = await contract.auctionItem(id, price, durationInSeconds);
+      await transaction.wait();
+
+    } catch (error) {
+      toast.error('An error has occurred while auctioning the item')
+    }
+  };
+
+  const bid = async (id, formInputAmount) => {
+    try {
+
+
+      const web3modal = new Web3Modal();
+      const connection = await web3modal.connect();
+      const provider = new ethers.providers.Web3Provider(connection);
+      const signer = provider.getSigner();
+
+      const contract = fetchContract(signer);
+      const usdc_contract = fetchUSDCContract(signer)
+      
+      const amount = ethers.utils.parseUnits(formInputAmount, DECIMALS);
+      const address = signer.getAddress()
+      const bid = await contract.getBid(id, address);
+      const newDeposit = amount - bid;
+      
+      const transaction_usdc = await usdc_contract.approve(MarketAddress, newDeposit)
+      await transaction_usdc.wait();
+
+      const transaction = await contract.bid(id, amount);
+      await transaction.wait();
+
+    } catch (error) {
+      toast.error('An error has occurred while biding')
+    }
+  };
+
+  const completeAuction = async (id) => {
+    try {
+
+
+      const web3modal = new Web3Modal();
+      const connection = await web3modal.connect();
+      const provider = new ethers.providers.Web3Provider(connection);
+      const signer = provider.getSigner();
+
+      const contract = fetchContract(signer);
+
+      const transaction = await contract.completeAuction(id);
+      await transaction.wait();
+
+    } catch (error) {
+      toast.error('An error has occurred while completing the auction')
+    }
+  };
+
+  const withdrawBid = async (id) => {
+    try {
+
+
+      const web3modal = new Web3Modal();
+      const connection = await web3modal.connect();
+      const provider = new ethers.providers.Web3Provider(connection);
+      const signer = provider.getSigner();
+
+      const contract = fetchContract(signer);
+
+      const transaction = await contract.withdrawBid(id);
+      await transaction.wait();
+
+      toast.success('We send your USDCs to your wallet')
+
+    } catch (error) {
+      toast.error('An error has occurred while withdrawing the bid')
+    }
+  };
+
+  const withdraw = async () => {
+    try {
+
+
+      const web3modal = new Web3Modal();
+      const connection = await web3modal.connect();
+      const provider = new ethers.providers.Web3Provider(connection);
+      const signer = provider.getSigner();
+
+      const contract = fetchContract(signer);
+
+      const transaction = await contract.withdraw();
+      await transaction.wait();
+
+    } catch (error) {
+      toast.error('An error has occurred while withdrawing the funds')
     }
   };
 
@@ -193,6 +300,92 @@ export const NFTProvider = ({ children }) => {
     }
   };
 
+  const fetchAuctionItems = async (setLoading) => {
+    try {
+
+      setLoading(true)
+
+      const network = process.env.NEXT_PUBLIC_ETH_NETWORK;
+      const infura_key = process.env.NEXT_PUBLIC_INFURA_KEY
+      const provider = new ethers.providers.InfuraProvider(network, infura_key);
+      const contract = fetchContract(provider);
+
+      const data = await contract.fetchAuctionItems();
+
+      const items = await Promise.all(data.map(
+        async ({ tokenId, owner, price: unformattedPrice, status, netPrice: unformattedNetPrice, startAt, endAt }) => {
+          const tokenURI = await contract.tokenURI(tokenId);
+          const { data: { image, name, description } } = await axios.get(tokenURI);
+          const price = ethers.utils.formatUnits(unformattedPrice.toString(), DECIMALS);
+          const netPrice = ethers.utils.formatUnits(unformattedNetPrice.toString(), DECIMALS);
+
+          image.replace("https:ipfs.io", "https://infura-ipfs.io")
+          console.log(image)
+
+          return {
+            price,
+            tokenId: tokenId.toNumber(),
+            owner,
+            image,
+            name,
+            description,
+            tokenURI,
+            status,
+            netPrice, 
+            startAt, 
+            endAt
+          };
+        },
+      ));
+      return items;
+    } catch (error) {
+      toast.error('An error has occurred fetching NFTs')
+    }
+  };
+
+  const fetchNFT = async (id) => {
+    try {
+
+      const network = process.env.NEXT_PUBLIC_ETH_NETWORK;
+      const infura_key = process.env.NEXT_PUBLIC_INFURA_KEY
+      const provider = new ethers.providers.InfuraProvider(network, infura_key);
+      const contract = fetchContract(provider);
+
+      const { 
+        tokenId, 
+        owner, 
+        price: unformattedPrice, 
+        status, 
+        netPrice: unformattedNetPrice, 
+        startAt, 
+        endAt 
+      } = await contract.fetchNFT(id);
+
+      const tokenURI = await contract.tokenURI(tokenId);
+      const { data: { image, name, description } } = await axios.get(tokenURI);
+      const price = ethers.utils.formatUnits(unformattedPrice.toString(), DECIMALS);
+      const netPrice = ethers.utils.formatUnits(unformattedNetPrice.toString(), DECIMALS);
+
+      image.replace("https:ipfs.io", "https://infura-ipfs.io")
+
+      return {
+        price,
+        tokenId: tokenId.toNumber(),
+        owner,
+        image,
+        name,
+        description,
+        tokenURI,
+        status,
+        netPrice, 
+        startAt, 
+        endAt
+      };
+    } catch (error) {
+      toast.error('An error has occurred fetching NFT')
+    }
+  };
+
   const fetchNFTs = async (setLoading) => {
     try {
 
@@ -206,10 +399,10 @@ export const NFTProvider = ({ children }) => {
       const data = await contract.fetchMarketItems();
 
       const items = await Promise.all(data.map(
-        async ({ tokenId, owner, price: unformattedPrice, onSale }) => {
+        async ({ tokenId, owner, price: unformattedPrice, status }) => {
           const tokenURI = await contract.tokenURI(tokenId);
           const { data: { image, name, description } } = await axios.get(tokenURI);
-          const price = ethers.utils.formatUnits(unformattedPrice.toString(), 6);
+          const price = ethers.utils.formatUnits(unformattedPrice.toString(), DECIMALS);
 
           image.replace("https:ipfs.io", "https://infura-ipfs.io")
           console.log(image)
@@ -222,7 +415,7 @@ export const NFTProvider = ({ children }) => {
             name,
             description,
             tokenURI,
-            onSale
+            status
           };
         },
       ));
@@ -246,13 +439,13 @@ export const NFTProvider = ({ children }) => {
       let data = await contract.fetchMyNFTs();
 
       if (type === 'fetchItemsListed')
-        data = data.filter((item) => item.onSale == true);
+        data = data.filter((item) => (item.status == STATUS_FOR_SALE || item.status == STATUS_AUCTION));
 
       const items = await Promise.all(data.map(
-        async ({ tokenId, owner, price: unformattedPrice, onSale }) => {
+        async ({ tokenId, owner, price: unformattedPrice, status }) => {
           const tokenURI = await contract.tokenURI(tokenId);
           const { data: { image, name, description } } = await axios.get(tokenURI);
-          const price = ethers.utils.formatUnits(unformattedPrice.toString(), 6);
+          const price = ethers.utils.formatUnits(unformattedPrice.toString(), DECIMALS);
 
 
 
@@ -260,7 +453,7 @@ export const NFTProvider = ({ children }) => {
             price,
             tokenId: tokenId.toNumber(),
             owner,
-            onSale,
+            status,
             image,
             name,
             description,
@@ -287,7 +480,7 @@ export const NFTProvider = ({ children }) => {
       const contract = fetchContract(signer);
       const usdc_contract = fetchUSDCContract(signer)
 
-      const price = ethers.utils.parseUnits(nft.price, 6);
+      const price = ethers.utils.parseUnits(nft.price, DECIMALS);
       const transaction_usdc = await usdc_contract.approve(MarketAddress, price)
       await transaction_usdc.wait();
       const transaction = await contract.createMarketSale(nft.tokenId);
@@ -331,7 +524,7 @@ export const NFTProvider = ({ children }) => {
           options: {
             address: process.env.NEXT_PUBLIC_USDC_ADDRESS, // The address of the token.
             symbol: 'SepoliaUSDC', // A ticker symbol or shorthand, up to 5 characters.
-            decimals: 6, // The number of decimals in the token.
+            decimals: DECIMALS, // The number of decimals in the token.
             image: "https://ipfs.io/ipfs/bafybeibxxoboebmzbpqj5ooqfadl5uecjyth4i5wozcul5kkq7yernxyn4/Allianz Logo.jpeg", // A string URL of the token logo.
           },
         },
@@ -353,12 +546,42 @@ export const NFTProvider = ({ children }) => {
       const address = await signer.getAddress()
       const balance = await contract.balanceOf(address)
 
-      const format_balance = ethers.utils.formatUnits(balance.toString(), 6);
+      const format_balance = ethers.utils.formatUnits(balance.toString(), DECIMALS);
       setBalanceOfUSDC(format_balance);
 
     } catch (error) {
       toast.error('An error has occurred getting balance.')
       console.log(error.message)
+    }
+  };
+
+  const getHighestBidder = async (id) => {
+    try {
+
+      const network = process.env.NEXT_PUBLIC_ETH_NETWORK;
+      const infura_key = process.env.NEXT_PUBLIC_INFURA_KEY
+      const provider = new ethers.providers.InfuraProvider(network, infura_key);
+      const contract = fetchContract(provider);
+
+      const address = await contract.getHighestBidder(id);
+      return address;
+    } catch (error) {
+      toast.error('An error has occurred fetching the highest bidder')
+    }
+  };
+
+  const getBid = async (id, address) => {
+    try {
+
+      const network = process.env.NEXT_PUBLIC_ETH_NETWORK;
+      const infura_key = process.env.NEXT_PUBLIC_INFURA_KEY
+      const provider = new ethers.providers.InfuraProvider(network, infura_key);
+      const contract = fetchContract(provider);
+
+      const bid = await contract.getBid(id, address);
+      return bid;
+    } catch (error) {
+      toast.error('An error has occurred fetching bids')
     }
   };
 
@@ -383,7 +606,16 @@ export const NFTProvider = ({ children }) => {
         setChainId,
         claimUSDCTokens,
         getBalanceOfUSDC,
-        balanceOfUSDC
+        balanceOfUSDC,
+        auctionItem,
+        bid,
+        completeAuction,
+        withdrawBid,
+        withdraw,
+        fetchAuctionItems,
+        fetchNFT,
+        getHighestBidder,
+        getBid,
       }}
     >
       {children}
